@@ -1,0 +1,172 @@
+/* Estilo geral e fonte */
+body {
+    font-family: 'Nunito', sans-serif;
+    background-color: #f0f8ff;
+    /* Um azul bem clarinho, cor de céu */
+    color: #333;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    display: flex;
+    gap: 20px;
+}
+
+/* Seção dos Produtos */
+.secao-produtos {
+    flex: 3;
+    /* Ocupa 3/4 do espaço */
+}
+
+.secao-produtos h1 {
+    color: #2e8b57;
+    /* Verde mar */
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.lista-produtos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.produto-card {
+    background-color: #fff;
+    border: 2px solid #ddd;
+    border-radius: 15px;
+    /* Bordas arredondadas estilo cartoon */
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.produto-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.produto-card img {
+    max-width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.produto-card h2 {
+    font-size: 1.2em;
+    margin: 10px 0;
+    color: #333;
+}
+
+.produto-card .preco {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #ff6347;
+    /* Tomate */
+}
+
+.produto-card .colheita {
+    font-size: 0.8em;
+    color: #888;
+}
+
+.controle-quantidade input {
+    width: 60px;
+    padding: 5px;
+    text-align: center;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    font-size: 1em;
+}
+
+/* Seção do Carrinho */
+.secao-carrinho {
+    flex: 1;
+    /* Ocupa 1/4 do espaço */
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    /* Fica fixo ao rolar a página */
+    top: 20px;
+    height: fit-content;
+}
+
+.secao-carrinho h2 {
+    color: #2e8b57;
+    text-align: center;
+    border-bottom: 2px dashed #ddd;
+    padding-bottom: 10px;
+}
+
+#carrinho-itens ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#carrinho-itens li {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.carrinho-total {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 2px dashed #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.3em;
+    font-weight: bold;
+}
+
+#valor-total {
+    color: #ff6347;
+}
+
+#btn-comprar {
+    width: 100%;
+    padding: 15px;
+    margin-top: 20px;
+    border: none;
+    background-color: #32cd32;
+    /* Verde limão */
+    color: white;
+    font-size: 1.2em;
+    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#btn-comprar:hover {
+    background-color: #228b22;
+    /* Verde floresta */
+}
+
+/* Adicione isso ao final do seu arquivo estilo.css */
+.btn-voltar {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background-color: #ff6347;
+    color: white;
+    padding: 8px 15px;
+    text-decoration: none;
+    border-radius: 20px;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.2s;
+}
+
+.btn-voltar:hover {
+    background-color: #e55337;
+}

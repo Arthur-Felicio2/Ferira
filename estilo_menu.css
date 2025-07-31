@@ -1,0 +1,61 @@
+body {
+    font-family: 'Nunito', sans-serif;
+    margin: 0;
+    background-color: #f0f8ff; /* Mesmo fundo azul clarinho da loja */
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Ocupa a tela inteira */
+}
+
+.menu-container {
+    text-align: center;
+    max-width: 800px;
+    padding: 20px;
+}
+
+header h1 {
+    font-size: 3em;
+    color: #2e8b57; /* Verde mar */
+    margin-bottom: 0;
+}
+
+header p {
+    font-size: 1.2em;
+    color: #555;
+    margin-top: 5px;
+}
+
+.opcoes {
+    display: flex;
+    gap: 30px; /* Espaço entre os cards */
+    margin-top: 40px;
+}
+
+.card-opcao {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    text-decoration: none;
+    color: inherit;
+    flex: 1; /* Faz com que ambos os cards ocupem o mesmo espaço */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-opcao:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 25px rgba(46, 139, 87, 0.2);
+}
+
+.card-opcao h2 {
+    color: #ff6347; /* Tomate */
+    margin-top: 0;
+    font-size: 1.8em;
+}
+
+.card-opcao p {
+    font-size: 1em;
+    line-height: 1.6;
+}

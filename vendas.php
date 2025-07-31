@@ -32,23 +32,34 @@ $result = $conn->query($varSQL);
                 // Loop para exibir cada produto do banco de dados
                 if ($result) {
                     while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-                        ?>
+                ?>
                         <div class="produto-card">
-                            <img src="<?= htmlspecialchars($row['foto']) ?>" alt="<?= htmlspecialchars($row['nome']) ?>">
+                            <?php
+                            // Chama a nossa nova função para exibir a imagem de forma segura
+                            echo exibirImagem($row['foto'], $row['nome']);
+                            ?>
                             <h2><?= htmlspecialchars($row['nome']) ?></h2>
                             <p class="preco">R$ <?= number_format($row['preco'], 2, ',', '.') ?></p>
                             <p class="colheita">Colhido em: <?= date('d/m/Y', strtotime($row['data_colheita'])) ?></p>
 
                             <div class="controle-quantidade">
                                 <label for="qtd-<?= $row['id_produto'] ?>">Quantidade:</label>
-                                <input type="number" id="qtd-<?= $row['id_produto'] ?>" min="0" value="0" class="input-qtd"
-                                    data-id="<?= $row['id_produto'] ?>" data-nome="<?= htmlspecialchars($row['nome']) ?>"
+                                <input
+                                    type="number"
+                                    id="qtd-<?= $row['id_produto'] ?>"
+                                    min="0"
+                                    value="0"
+                                    class="input-qtd"
+                                    data-id="<?= $row['id_produto'] ?>"
+                                    data-nome="<?= htmlspecialchars($row['nome']) ?>"
                                     data-preco="<?= $row['preco'] ?>">
                             </div>
                         </div>
-                        <?php
+                <?php
                     }
                 }
+                ?>
+
                 ?>
             </div>
         </div>

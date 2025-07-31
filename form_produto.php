@@ -8,7 +8,7 @@ $produto = [
     'nome' => '',
     'preco' => '',
     'data_colheita' => '',
-    'foto' => ''
+    'foto' => '' // Vai armazenar o link (URL)
 ];
 
 // Se um ID foi passado pela URL, estamos em modo de edição
@@ -43,7 +43,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
     <div class="container">
         <h1><?= $modo_edicao ? 'Editar Produto' : 'Cadastrar Novo Produto' ?></h1>
 
-        <form action="processa_produto.php" method="POST" enctype="multipart/form-data">
+        <form action="processa_produto.php" method="POST">
 
             <input type="hidden" name="acao" value="<?= $modo_edicao ? 'editar' : 'cadastrar' ?>">
             <?php if ($modo_edicao): ?>
@@ -57,23 +57,20 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
 
             <div class="form-grupo">
                 <label for="preco">Preço (ex: 9.99):</label>
-                <input type="number" step="0.01" id="preco" name="preco"
-                    value="<?= htmlspecialchars($produto['preco']) ?>" required>
+                <input type="number" step="0.01" id="preco" name="preco" value="<?= htmlspecialchars($produto['preco']) ?>" required>
             </div>
 
             <div class="form-grupo">
                 <label for="data_colheita">Data da Colheita:</label>
-                <input type="date" id="data_colheita" name="data_colheita"
-                    value="<?= htmlspecialchars($produto['data_colheita']) ?>" required>
+                <input type="date" id="data_colheita" name="data_colheita" value="<?= htmlspecialchars($produto['data_colheita']) ?>" required>
             </div>
 
             <div class="form-grupo">
-                <label for="foto">Foto do Produto:</label>
-                <input type="file" id="foto" name="foto" accept="image/*">
+                <label for="foto">Link (URL) da Foto do Produto:</label>
+                <input type="url" id="foto" name="foto" placeholder="https://exemplo.com/imagem.jpg" value="<?= htmlspecialchars($produto['foto']) ?>">
+
                 <?php if ($modo_edicao && !empty($produto['foto'])): ?>
-                    <p>Foto atual: <img src="<?= htmlspecialchars($produto['foto']) ?>" alt="Foto atual"
-                            class="foto-produto-preview"></p>
-                    <input type="hidden" name="foto_antiga" value="<?= $produto['foto'] ?>">
+                    <p>Foto atual: <img src="<?= htmlspecialchars($produto['foto']) ?>" alt="Foto atual" class="foto-produto-preview"></p>
                 <?php endif; ?>
             </div>
 

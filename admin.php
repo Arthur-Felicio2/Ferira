@@ -37,20 +37,23 @@ $result = $conn->query($varSQL);
                 <?php
                 if ($result) {
                     while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-                        ?>
+                ?>
                         <tr>
-                            <td><img src="<?= htmlspecialchars($row['foto']) ?>"
-                                    alt="Foto de <?= htmlspecialchars($row['nome']) ?>" class="foto-produto"></td>
+                            <td>
+                                <?php
+                                // Chama a nossa nova função para exibir a imagem de forma segura
+                                echo exibirImagem($row['foto'], "Foto de " . $row['nome'], 'foto-produto');
+                                ?>
+                            </td>
                             <td><?= htmlspecialchars($row['nome']) ?></td>
                             <td>R$ <?= number_format($row['preco'], 2, ',', '.') ?></td>
                             <td><?= date('d/m/Y', strtotime($row['data_colheita'])) ?></td>
                             <td class="acoes">
                                 <a href="form_produto.php?id=<?= $row['id_produto'] ?>" class="btn-editar">Editar</a>
-                                <a href="processa_produto.php?acao=excluir&id=<?= $row['id_produto'] ?>" class="btn-excluir"
-                                    onclick="return confirm('Tem certeza que deseja excluir este produto?');">Excluir</a>
+                                <a href="processa_produto.php?acao=excluir&id=<?= $row['id_produto'] ?>" class="btn-excluir" onclick="return confirm('Tem certeza que deseja excluir este produto?');">Excluir</a>
                             </td>
                         </tr>
-                        <?php
+                <?php
                     }
                 }
                 ?>

@@ -8,10 +8,9 @@ $produto = [
     'nome' => '',
     'preco' => '',
     'data_colheita' => '',
-    'foto' => '' // Vai armazenar o link (URL)
+    'foto' => ''
 ];
 
-// Se um ID foi passado pela URL, estamos em modo de edição
 if (isset($_GET['id']) && !empty($_GET['id'])) {
     $modo_edicao = true;
     $id_produto = $_GET['id'];
@@ -43,11 +42,12 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
     <div class="container">
         <h1><?= $modo_edicao ? 'Editar Produto' : 'Cadastrar Novo Produto' ?></h1>
 
-        <form action="processa_produto.php" method="POST">
+        <form action="processa_produto.php" method="POST" enctype="multipart/form-data">
 
             <input type="hidden" name="acao" value="<?= $modo_edicao ? 'editar' : 'cadastrar' ?>">
             <?php if ($modo_edicao): ?>
                 <input type="hidden" name="id_produto" value="<?= $produto['id_produto'] ?>">
+                <input type="hidden" name="foto_antiga" value="<?= htmlspecialchars($produto['foto']) ?>">
             <?php endif; ?>
 
             <div class="form-grupo">
@@ -66,8 +66,8 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
             </div>
 
             <div class="form-grupo">
-                <label for="foto">Link (URL) da Foto do Produto:</label>
-                <input type="url" id="foto" name="foto" placeholder="https://exemplo.com/imagem.jpg" value="<?= htmlspecialchars($produto['foto']) ?>">
+                <label for="foto">Foto do Produto:</label>
+                <input type="file" id="foto" name="foto" accept="image/png, image/jpeg, image/gif">
 
                 <?php if ($modo_edicao && !empty($produto['foto'])): ?>
                     <p>Foto atual: <img src="<?= htmlspecialchars($produto['foto']) ?>" alt="Foto atual" class="foto-produto-preview"></p>

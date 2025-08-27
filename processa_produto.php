@@ -1,6 +1,11 @@
 <?php
 
 include "funcs.php";
+if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['admin'] != 1) {
+    $_SESSION['mensagem'] = "Acesso negado. Apenas administradores podem acessar esta área.";
+    header('Location: login.php');
+    exit();
+}
 $conn = conecta();
 
 /**

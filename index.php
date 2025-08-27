@@ -1,5 +1,10 @@
+<?php
+// Incluímos para poder verificar a sessão
+include "funcs.php";
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,9 +14,18 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <div class="menu-container">
         <header>
+            <div class="info-usuario-menu">
+                <?php if (isset($_SESSION['usuario'])): ?>
+                    <span>Olá, <?= htmlspecialchars($_SESSION['usuario']['nome']) ?>!</span>
+                    <a href="logout.php">Sair</a>
+                <?php else: ?>
+                    <a href="login.php">Login / Cadastrar</a>
+                <?php endif; ?>
+            </div>
             <h1>Feira Fresca</h1>
             <p>Selecione seu tipo de acesso</p>
         </header>
@@ -29,4 +43,5 @@
         </main>
     </div>
 </body>
+
 </html>

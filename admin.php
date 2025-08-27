@@ -1,8 +1,14 @@
 <?php
 include "funcs.php";
-$conn = conecta();
 
-$varSQL = "SELECT * FROM produtos ORDER BY id_produto DESC";
+if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['admin'] != 1) {
+    $_SESSION['mensagem'] = "Acesso negado. Apenas administradores podem acessar esta área.";
+    header('Location: login.php');
+    exit();
+}
+
+$conn = conecta();
+$varSQL = "SELECT * FROM produto WHERE excluido = false ORDER BY id_produto DESC";
 $result = $conn->query($varSQL);
 ?>
 <!DOCTYPE html>
@@ -26,10 +32,11 @@ $result = $conn->query($varSQL);
         <table>
             <thead>
                 <tr>
-                    <th>Foto</th>
+                    <th>Imagem</th>
                     <th>Nome</th>
-                    <th>Preço</th>
-                    <th>Data da Colheita</th>
+                    <th>Descrição</th>
+                    <th>Valor Unitário</th>
+                    <th>Estoque</th>
                     <th>Ações</th>
                 </tr>
             </thead>
@@ -41,13 +48,14 @@ $result = $conn->query($varSQL);
                         <tr>
                             <td>
                                 <?php
-                                // Chama a nossa nova função para exibir a imagem de forma segura
-                                echo exibirImagem($row['foto'], "Foto de " . $row['nome'], 'foto-produto');
+                                // AJUSTADO: Usa a coluna "imagem"
+                                echo exibirImagem($row['imagem'], "Foto de " . $row['nome'], 'foto-produto');
                                 ?>
                             </td>
                             <td><?= htmlspecialchars($row['nome']) ?></td>
-                            <td>R$ <?= number_format($row['preco'], 2, ',', '.') ?></td>
-                            <td><?= date('d/m/Y', strtotime($row['data_colheita'])) ?></td>
+                            <td><?= htmlspecialchars($row['descricao']) ?></td>
+                            <td>R$ <?= number_format($row['valor_unitario'], 2, ',', '.') ?></td>
+                            <td><?= htmlspecialchars($row['qtde_estoque']) ?></td>
                             <td class="acoes">
                                 <a href="form_produto.php?id=<?= $row['id_produto'] ?>" class="btn-editar">Editar</a>
                                 <a href="processa_produto.php?acao=excluir&id=<?= $row['id_produto'] ?>" class="btn-excluir" onclick="return confirm('Tem certeza que deseja excluir este produto?');">Excluir</a>

@@ -1,21 +1,27 @@
 <?php
 include "funcs.php";
+if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['admin'] != 1) {
+    // Se não for admin, interrompe a execução completamente.
+    die("Acesso não autorizado.");
+}
 $conn = conecta();
 
 $modo_edicao = false;
 $produto = [
     'id_produto' => '',
     'nome' => '',
-    'preco' => '',
-    'data_colheita' => '',
-    'foto' => ''
+    'descricao' => '', // Adicionado
+    'valor_unitario' => '', // Renomeado
+    'qtde_estoque' => '', // Adicionado
+    'imagem' => '' // Renomeado
 ];
 
 if (isset($_GET['id']) && !empty($_GET['id'])) {
     $modo_edicao = true;
     $id_produto = $_GET['id'];
 
-    $sql = "SELECT * FROM produtos WHERE id_produto = :id";
+    // AJUSTADO: Busca da tabela "produto"
+    $sql = "SELECT * FROM produto WHERE id_produto = :id";
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':id', $id_produto, PDO::PARAM_INT);
     $stmt->execute();
@@ -47,7 +53,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
             <input type="hidden" name="acao" value="<?= $modo_edicao ? 'editar' : 'cadastrar' ?>">
             <?php if ($modo_edicao): ?>
                 <input type="hidden" name="id_produto" value="<?= $produto['id_produto'] ?>">
-                <input type="hidden" name="foto_antiga" value="<?= htmlspecialchars($produto['foto']) ?>">
+                <input type="hidden" name="imagem_antiga" value="<?= htmlspecialchars($produto['imagem']) ?>">
             <?php endif; ?>
 
             <div class="form-grupo">
@@ -56,21 +62,26 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
             </div>
 
             <div class="form-grupo">
-                <label for="preco">Preço (ex: 9.99):</label>
-                <input type="number" step="0.01" id="preco" name="preco" value="<?= htmlspecialchars($produto['preco']) ?>" required>
+                <label for="descricao">Descrição:</label>
+                <textarea id="descricao" name="descricao" rows="3" required><?= htmlspecialchars($produto['descricao']) ?></textarea>
             </div>
 
             <div class="form-grupo">
-                <label for="data_colheita">Data da Colheita:</label>
-                <input type="date" id="data_colheita" name="data_colheita" value="<?= htmlspecialchars($produto['data_colheita']) ?>" required>
+                <label for="valor_unitario">Valor Unitário (ex: 9.99):</label>
+                <input type="number" step="0.01" id="valor_unitario" name="valor_unitario" value="<?= htmlspecialchars($produto['valor_unitario']) ?>" required>
             </div>
 
             <div class="form-grupo">
-                <label for="foto">Foto do Produto:</label>
-                <input type="file" id="foto" name="foto" accept="image/png, image/jpeg, image/gif">
+                <label for="qtde_estoque">Quantidade em Estoque:</label>
+                <input type="number" step="1" id="qtde_estoque" name="qtde_estoque" value="<?= htmlspecialchars($produto['qtde_estoque']) ?>" required>
+            </div>
 
-                <?php if ($modo_edicao && !empty($produto['foto'])): ?>
-                    <p>Foto atual: <img src="<?= htmlspecialchars($produto['foto']) ?>" alt="Foto atual" class="foto-produto-preview"></p>
+            <div class="form-grupo">
+                <label for="imagem">Imagem do Produto:</label>
+                <input type="file" id="imagem" name="imagem" accept="image/png, image/jpeg, image/gif">
+
+                <?php if ($modo_edicao && !empty($produto['imagem'])): ?>
+                    <p>Imagem atual: <img src="<?= htmlspecialchars($produto['imagem']) ?>" alt="Imagem atual" class="foto-produto-preview"></p>
                 <?php endif; ?>
             </div>
 

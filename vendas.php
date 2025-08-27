@@ -1,10 +1,10 @@
 <?php
-// Mantenha seu funcs.php como está
+// Mantenha seu funcs.php como está, ele já inicia a sessão
 include "funcs.php";
 $conn = conecta();
 
-// Sua query SQL está perfeita
-$varSQL = "SELECT id_produto, nome, preco, data_colheita, foto FROM produtos ORDER BY nome";
+// SQL AJUSTADO: Seleciona da tabela "produto" e usa as colunas corretas.
+$varSQL = "SELECT id_produto, nome, valor_unitario, imagem, descricao FROM produto WHERE excluido = false ORDER BY nome";
 $result = $conn->query($varSQL);
 ?>
 
@@ -22,25 +22,35 @@ $result = $conn->query($varSQL);
 </head>
 
 <body>
-    <a href="index.php" class="btn-voltar">‹ Voltar ao Menu</a>
+    <header class="menu-usuario">
+        <div class="container-menu">
+            <a href="index.php" class="btn-voltar">‹ Voltar ao Menu</a>
+            <div class="info-usuario">
+                <?php if (isset($_SESSION['usuario'])): ?>
+                    <span>Olá, <?= htmlspecialchars($_SESSION['usuario']['nome']) ?>!</span>
+                    <a href="logout.php" class="btn-sair">Sair</a>
+                <?php else: ?>
+                    <a href="login.php" class="btn-login">Login / Cadastrar</a>
+                <?php endif; ?>
+            </div>
+        </div>
+    </header>
 
     <div class="container">
         <div class="secao-produtos">
             <h1>Nossos Produtos Fresquinhos</h1>
             <div class="lista-produtos">
                 <?php
-                // Loop para exibir cada produto do banco de dados
                 if ($result) {
                     while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
                 ?>
                         <div class="produto-card">
                             <?php
-                            // Chama a nossa nova função para exibir a imagem de forma segura
-                            echo exibirImagem($row['foto'], $row['nome']);
+                            echo exibirImagem($row['imagem'], $row['nome']);
                             ?>
                             <h2><?= htmlspecialchars($row['nome']) ?></h2>
-                            <p class="preco">R$ <?= number_format($row['preco'], 2, ',', '.') ?></p>
-                            <p class="colheita">Colhido em: <?= date('d/m/Y', strtotime($row['data_colheita'])) ?></p>
+                            <p class="preco">R$ <?= number_format($row['valor_unitario'], 2, ',', '.') ?></p>
+                            <p class="descricao"><?= htmlspecialchars($row['descricao']) ?></p>
 
                             <div class="controle-quantidade">
                                 <label for="qtd-<?= $row['id_produto'] ?>">Quantidade:</label>
@@ -52,14 +62,12 @@ $result = $conn->query($varSQL);
                                     class="input-qtd"
                                     data-id="<?= $row['id_produto'] ?>"
                                     data-nome="<?= htmlspecialchars($row['nome']) ?>"
-                                    data-preco="<?= $row['preco'] ?>">
+                                    data-preco="<?= $row['valor_unitario'] ?>">
                             </div>
                         </div>
                 <?php
                     }
                 }
-                ?>
-
                 ?>
             </div>
         </div>
@@ -77,6 +85,9 @@ $result = $conn->query($varSQL);
         </div>
     </div>
 
+    <script>
+        const isLoggedIn = <?= isset($_SESSION['usuario']) ? 'true' : 'false' ?>;
+    </script>
     <script src="script.js"></script>
 
 </body>

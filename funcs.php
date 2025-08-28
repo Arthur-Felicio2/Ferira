@@ -1,5 +1,13 @@
 <?php
+// Inicia a sessão se ela ainda não estiver ativa.
+// Esta deve ser a PRIMEIRA coisa no arquivo para garantir que a sessão funcione em todas as páginas.
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
+/**
+ * Função para conectar ao banco de dados PostgreSQL.
+ */
 function conecta($params = "")
 {
     $params = "pgsql:host=localhost; port=5432; dbname=Comercio; user=postgres; password=postgres";
@@ -11,7 +19,8 @@ function conecta($params = "")
         echo $e->getMessage();
         exit;
     }
-};
+}
+;
 
 /**
  * Função CORRIGIDA para exibir uma imagem salva localmente.
@@ -26,8 +35,7 @@ function exibirImagem($caminho, $alt_text, $classe_css = 'foto-produto')
     // Caminho para a sua imagem de erro padrão
     $imagem_erro = 'error.png';
 
-    // MUDANÇA CRÍTICA:
-    // Agora, verificamos se o caminho não está vazio E se o arquivo realmente existe no servidor.
+    // Verificamos se o caminho não está vazio E se o arquivo realmente existe no servidor.
     if (!empty($caminho) && file_exists($caminho)) {
         // Se o arquivo existe, mostra a imagem.
         $caminho_seguro = htmlspecialchars($caminho, ENT_QUOTES, 'UTF-8');

@@ -23,16 +23,24 @@ $result = $conn->query($varSQL);
 
 <body>
     <header class="menu-usuario">
-        <div class="container-menu">
-            <a href="index.php" class="btn-voltar">‹ Voltar ao Menu</a>
-            <div class="info-usuario">
-                <?php if (isset($_SESSION['usuario'])): ?>
-                    <span>Olá, <?= htmlspecialchars($_SESSION['usuario']['nome']) ?>!</span>
-                    <a href="logout.php" class="btn-sair">Sair</a>
-                <?php else: ?>
-                    <a href="login.php" class="btn-login">Login / Cadastrar</a>
-                <?php endif; ?>
-            </div>
+        <a href="index.php" class="btn-voltar">‹ Voltar ao Menu</a>
+        <div class="info-usuario">
+            <?php if (isset($_SESSION['usuario'])): ?>
+                <div class="menu-perfil">
+                    <button class="btn-perfil" onclick="toggleMenu()">
+                        Olá, <?= htmlspecialchars($_SESSION['usuario']['nome']) ?>! &#9662;
+                    </button>
+                    <div id="dropdown-perfil" class="dropdown-conteudo">
+                        <a href="logout.php">Sair</a>
+                        <a href="auth.php?acao=auto_excluir" class="link-perigo"
+                            onclick="return confirm('ATENÇÃO!\n\nTem certeza que deseja excluir sua conta?\nEsta ação é permanente e não pode ser desfeita.');">
+                            Excluir Conta
+                        </a>
+                    </div>
+                </div>
+            <?php else: ?>
+                <a href="login.php" class="btn-login">Login / Cadastrar</a>
+            <?php endif; ?>
         </div>
     </header>
 
@@ -43,7 +51,7 @@ $result = $conn->query($varSQL);
                 <?php
                 if ($result) {
                     while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-                ?>
+                        ?>
                         <div class="produto-card">
                             <?php
                             echo exibirImagem($row['imagem'], $row['nome']);
@@ -54,18 +62,12 @@ $result = $conn->query($varSQL);
 
                             <div class="controle-quantidade">
                                 <label for="qtd-<?= $row['id_produto'] ?>">Quantidade:</label>
-                                <input
-                                    type="number"
-                                    id="qtd-<?= $row['id_produto'] ?>"
-                                    min="0"
-                                    value="0"
-                                    class="input-qtd"
-                                    data-id="<?= $row['id_produto'] ?>"
-                                    data-nome="<?= htmlspecialchars($row['nome']) ?>"
+                                <input type="number" id="qtd-<?= $row['id_produto'] ?>" min="0" value="0" class="input-qtd"
+                                    data-id="<?= $row['id_produto'] ?>" data-nome="<?= htmlspecialchars($row['nome']) ?>"
                                     data-preco="<?= $row['valor_unitario'] ?>">
                             </div>
                         </div>
-                <?php
+                        <?php
                     }
                 }
                 ?>
@@ -89,6 +91,23 @@ $result = $conn->query($varSQL);
         const isLoggedIn = <?= isset($_SESSION['usuario']) ? 'true' : 'false' ?>;
     </script>
     <script src="script.js"></script>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById("dropdown-perfil").classList.toggle("mostrar");
+        }
+        window.onclick = function (event) {
+            if (!event.target.matches('.btn-perfil')) {
+                var dropdowns = document.getElementsByClassName("dropdown-conteudo");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('mostrar')) {
+                        openDropdown.classList.remove('mostrar');
+                    }
+                }
+            }
+        }
+    </script>
 
 </body>
 

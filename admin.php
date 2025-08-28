@@ -1,12 +1,14 @@
 <?php
 include "funcs.php";
 
-if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['admin'] != 1) {
+// Proteção da página
+if (!isset($_SESSION['usuario']['admin']) || $_SESSION['usuario']['admin'] != true) {
     $_SESSION['mensagem'] = "Acesso negado. Apenas administradores podem acessar esta área.";
     header('Location: login.php');
     exit();
 }
 
+// Busca os produtos no banco
 $conn = conecta();
 $varSQL = "SELECT * FROM produto WHERE excluido = false ORDER BY id_produto DESC";
 $result = $conn->query($varSQL);
@@ -26,8 +28,11 @@ $result = $conn->query($varSQL);
 <body>
     <div class="container">
         <h1>Gerenciador de Produtos da Feira</h1>
-        <a href="index.php" class="btn-voltar-admin">‹ Voltar ao Menu</a>
-        <a href="form_produto.php" class="btn-novo">Cadastrar Novo Produto</a>
+        <a href="index.php" class="btn-voltar-admin">‹ Voltar ao Menu Principal</a>
+
+        <div class="form-acoes" style="margin-bottom: 20px; justify-content: flex-start;">
+            <a href="form_produto.php" class="btn-novo">Cadastrar Novo Produto</a>
+        </div>
 
         <table>
             <thead>
@@ -44,13 +49,10 @@ $result = $conn->query($varSQL);
                 <?php
                 if ($result) {
                     while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-                ?>
+                        ?>
                         <tr>
                             <td>
-                                <?php
-                                // AJUSTADO: Usa a coluna "imagem"
-                                echo exibirImagem($row['imagem'], "Foto de " . $row['nome'], 'foto-produto');
-                                ?>
+                                <?php echo exibirImagem($row['imagem'], "Foto de " . $row['nome'], 'foto-produto'); ?>
                             </td>
                             <td><?= htmlspecialchars($row['nome']) ?></td>
                             <td><?= htmlspecialchars($row['descricao']) ?></td>
@@ -58,10 +60,11 @@ $result = $conn->query($varSQL);
                             <td><?= htmlspecialchars($row['qtde_estoque']) ?></td>
                             <td class="acoes">
                                 <a href="form_produto.php?id=<?= $row['id_produto'] ?>" class="btn-editar">Editar</a>
-                                <a href="processa_produto.php?acao=excluir&id=<?= $row['id_produto'] ?>" class="btn-excluir" onclick="return confirm('Tem certeza que deseja excluir este produto?');">Excluir</a>
+                                <a href="processa_produto.php?acao=excluir&id=<?= $row['id_produto'] ?>" class="btn-excluir"
+                                    onclick="return confirm('Tem certeza que deseja excluir este produto?');">Excluir</a>
                             </td>
                         </tr>
-                <?php
+                        <?php
                     }
                 }
                 ?>

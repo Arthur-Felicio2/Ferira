@@ -20,10 +20,20 @@ include "funcs.php";
         <header>
             <div class="info-usuario-menu">
                 <?php if (isset($_SESSION['usuario'])): ?>
-                    <span>Olá, <?= htmlspecialchars($_SESSION['usuario']['nome']) ?>!</span>
-                    <a href="logout.php">Sair</a>
+                    <div class="menu-perfil">
+                        <button class="btn-perfil" onclick="toggleMenu()">
+                            Olá, <?= htmlspecialchars($_SESSION['usuario']['nome']) ?>! &#9662;
+                        </button>
+                        <div id="dropdown-perfil" class="dropdown-conteudo">
+                            <a href="logout.php">Sair</a>
+                            <a href="auth.php?acao=auto_excluir" class="link-perigo"
+                                onclick="return confirm('ATENÇÃO!\n\nTem certeza que deseja excluir sua conta?\nEsta ação é permanente e não pode ser desfeita.');">
+                                Excluir Conta
+                            </a>
+                        </div>
+                    </div>
                 <?php else: ?>
-                    <a href="login.php">Login / Cadastrar</a>
+                    <a href="login.php" class="btn-login">Login / Cadastrar</a>
                 <?php endif; ?>
             </div>
             <h1>Feira Fresca</h1>
@@ -42,6 +52,22 @@ include "funcs.php";
             </a>
         </main>
     </div>
+    <script>
+        function toggleMenu() {
+            document.getElementById("dropdown-perfil").classList.toggle("mostrar");
+        }
+        window.onclick = function (event) {
+            if (!event.target.matches('.btn-perfil')) {
+                var dropdowns = document.getElementsByClassName("dropdown-conteudo");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('mostrar')) {
+                        openDropdown.classList.remove('mostrar');
+                    }
+                }
+            }
+        }
+    </script>
 </body>
 
 </html>

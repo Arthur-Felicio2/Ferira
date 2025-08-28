@@ -1,9 +1,10 @@
 <?php
 include "funcs.php";
-if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['admin'] != 1) {
-    // Se não for admin, interrompe a execução completamente.
+
+if (!isset($_SESSION['usuario']['admin']) || $_SESSION['usuario']['admin'] != true) {
     die("Acesso não autorizado.");
 }
+
 $conn = conecta();
 
 $modo_edicao = false;
@@ -63,17 +64,20 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
 
             <div class="form-grupo">
                 <label for="descricao">Descrição:</label>
-                <textarea id="descricao" name="descricao" rows="3" required><?= htmlspecialchars($produto['descricao']) ?></textarea>
+                <textarea id="descricao" name="descricao" rows="3"
+                    required><?= htmlspecialchars($produto['descricao']) ?></textarea>
             </div>
 
             <div class="form-grupo">
                 <label for="valor_unitario">Valor Unitário (ex: 9.99):</label>
-                <input type="number" step="0.01" id="valor_unitario" name="valor_unitario" value="<?= htmlspecialchars($produto['valor_unitario']) ?>" required>
+                <input type="number" step="0.01" id="valor_unitario" name="valor_unitario"
+                    value="<?= htmlspecialchars($produto['valor_unitario']) ?>" required>
             </div>
 
             <div class="form-grupo">
                 <label for="qtde_estoque">Quantidade em Estoque:</label>
-                <input type="number" step="1" id="qtde_estoque" name="qtde_estoque" value="<?= htmlspecialchars($produto['qtde_estoque']) ?>" required>
+                <input type="number" step="1" id="qtde_estoque" name="qtde_estoque"
+                    value="<?= htmlspecialchars($produto['qtde_estoque']) ?>" required>
             </div>
 
             <div class="form-grupo">
@@ -81,7 +85,8 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                 <input type="file" id="imagem" name="imagem" accept="image/png, image/jpeg, image/gif">
 
                 <?php if ($modo_edicao && !empty($produto['imagem'])): ?>
-                    <p>Imagem atual: <img src="<?= htmlspecialchars($produto['imagem']) ?>" alt="Imagem atual" class="foto-produto-preview"></p>
+                    <p>Imagem atual: <img src="<?= htmlspecialchars($produto['imagem']) ?>" alt="Imagem atual"
+                            class="foto-produto-preview"></p>
                 <?php endif; ?>
             </div>
 

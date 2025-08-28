@@ -1,17 +1,21 @@
 <?php
 // Inicia a sessão para podermos usar variáveis de sessão (ex: mensagens de erro)
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <title>Login - Feira Fresca</title>
-    <link rel="stylesheet" href="estilo_admin.css"> 
+    <link rel="stylesheet" href="estilo_admin.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <div class="container">
         <h1>Acessar Minha Conta</h1>
@@ -19,8 +23,8 @@ session_start();
         <?php
         // Exibe mensagens de erro ou sucesso que podem ter sido enviadas pelo auth.php
         if (isset($_SESSION['mensagem'])) {
-            echo "<p class='mensagem'>" . $_SESSION['mensagem'] . "</p>";
-            // Limpa a mensagem para não aparecer novamente
+            // Adicionei uma classe para poder estilizar a mensagem
+            echo "<p class='mensagem-feedback'>" . htmlspecialchars($_SESSION['mensagem']) . "</p>";
             unset($_SESSION['mensagem']);
         }
         ?>
@@ -40,9 +44,12 @@ session_start();
                 <a href="vendas.php" class="btn-cancelar">Voltar à Loja</a>
             </div>
         </form>
-        <p style="text-align: center; margin-top: 20px;">
-            Não tem uma conta? <a href="cadastro.php">Cadastre-se aqui!</a>
-        </p>
+
+        <div class="cadastro-link">
+            <p>Ainda não tem uma conta?</p>
+            <a href="cadastro.php" class="btn-novo">Cadastre-se Agora!</a>
+        </div>
     </div>
 </body>
+
 </html>

@@ -6,6 +6,8 @@ body {
     color: #333;
     margin: 0;
     padding: 20px;
+    position: relative;
+    /* Adicionado para permitir posicionamento absoluto de elementos filhos */
 }
 
 .container {
@@ -152,11 +154,38 @@ body {
     /* Verde floresta */
 }
 
-/* Adicione isso ao final do seu arquivo estilo.css */
+/* NOVO CONTÊINER PARA O MENU E BOTOES NO TOPO */
+.menu-usuario {
+    display: flex;
+    justify-content: space-between;
+    /* Alinha o botão voltar à esquerda e info do usuário à direita */
+    align-items: center;
+    margin-bottom: 20px;
+    /* Espaço abaixo do cabeçalho */
+    padding: 0 20px;
+    /* Preenchimento lateral */
+    position: sticky;
+    /* Mantém fixo ao rolar */
+    top: 0;
+    z-index: 1000;
+    /* Garante que fique acima de outros elementos */
+    background-color: #f0f8ff;
+    /* Cor de fundo para evitar transparência */
+    padding-top: 15px;
+    /* Ajusta o padding para o top do body */
+    padding-bottom: 15px;
+    margin-left: -20px;
+    /* Desloca para a esquerda para alinhar com o padding do body */
+    margin-right: -20px;
+    /* Desloca para a direita */
+    width: calc(100% + 40px);
+    /* Ajusta a largura para cobrir a tela */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    /* Sutil sombra para destacar */
+}
+
+/* Botão de voltar (NOVO POSICIONAMENTO E ESTILO) */
 .btn-voltar {
-    position: absolute;
-    top: 15px;
-    left: 15px;
     background-color: #ff6347;
     color: white;
     padding: 8px 15px;
@@ -165,8 +194,124 @@ body {
     font-weight: bold;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     transition: background-color 0.2s;
+    white-space: nowrap;
+    /* Evita que o texto quebre */
 }
 
 .btn-voltar:hover {
     background-color: #e55337;
+}
+
+/* Estilo para o link/botão de Login e Sair */
+.btn-login,
+.btn-sair {
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    white-space: nowrap;
+    margin-right: 20%;
+    /* Evita que o texto quebre em várias linhas */
+}
+
+/* Estilo específico para o botão de Login/Cadastrar */
+.btn-login {
+    background-color: #28a745;
+    /* Verde sucesso */
+    color: #fff;
+}
+
+.btn-login:hover {
+    background-color: #218838;
+    /* Verde mais escuro */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Estilo específico para o botão de Sair */
+.btn-sair {
+    background-color: #dc3545;
+    /* Vermelho perigo */
+    color: #fff;
+}
+
+.btn-sair:hover {
+    background-color: #c82333;
+    /* Vermelho mais escuro */
+}
+
+/* Container para alinhar o "Olá, Nome!" e o botão */
+.info-usuario {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    /* Espaço entre o texto e o botão */
+}
+
+/* Estilo para o span "Olá, Nome!" na página de vendas */
+.info-usuario span {
+    font-weight: bold;
+    color: #2e8b57;
+    /* Um verde suave para o nome */
+}
+
+/* --- ESTILOS PARA O NOVO MENU DE PERFIL --- */
+.menu-perfil {
+    position: relative;
+    display: inline-block;
+}
+
+.btn-perfil {
+    background-color: #f8f9fa;
+    color: #333;
+    padding: 8px 16px;
+    font-size: 1em;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.btn-perfil:hover {
+    background-color: #e9ecef;
+}
+
+.dropdown-conteudo {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #ffffff;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.dropdown-conteudo a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+}
+
+.dropdown-conteudo a:hover {
+    background-color: #f1f1f1;
+}
+
+.link-perigo {
+    color: #dc3545 !important;
+    font-weight: bold;
+}
+
+.link-perigo:hover {
+    background-color: #dc3545 !important;
+    color: white !important;
+}
+
+.mostrar {
+    display: block;
 }

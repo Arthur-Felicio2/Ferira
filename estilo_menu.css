@@ -1,12 +1,16 @@
 body {
     font-family: 'Nunito', sans-serif;
     margin: 0;
-    background-color: #f0f8ff; /* Mesmo fundo azul clarinho da loja */
+    background-color: #f0f8ff;
+    /* Mesmo fundo azul clarinho da loja */
     color: #333;
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh; /* Ocupa a tela inteira */
+    min-height: 100vh;
+    /* Ocupa a tela inteira */
+    position: relative;
+    /* Adicionado para permitir posicionamento absoluto de elementos filhos */
 }
 
 .menu-container {
@@ -17,7 +21,8 @@ body {
 
 header h1 {
     font-size: 3em;
-    color: #2e8b57; /* Verde mar */
+    color: #2e8b57;
+    /* Verde mar */
     margin-bottom: 0;
 }
 
@@ -29,7 +34,8 @@ header p {
 
 .opcoes {
     display: flex;
-    gap: 30px; /* Espaço entre os cards */
+    gap: 30px;
+    /* Espaço entre os cards */
     margin-top: 40px;
 }
 
@@ -37,10 +43,11 @@ header p {
     background-color: #fff;
     padding: 30px;
     border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     text-decoration: none;
     color: inherit;
-    flex: 1; /* Faz com que ambos os cards ocupem o mesmo espaço */
+    flex: 1;
+    /* Faz com que ambos os cards ocupem o mesmo espaço */
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -50,7 +57,8 @@ header p {
 }
 
 .card-opcao h2 {
-    color: #ff6347; /* Tomate */
+    color: #ff6347;
+    /* Tomate */
     margin-top: 0;
     font-size: 1.8em;
 }
@@ -58,4 +66,121 @@ header p {
 .card-opcao p {
     font-size: 1em;
     line-height: 1.6;
+}
+
+/* Estilo para o link/botão de Login e Sair */
+.btn-login,
+.btn-sair {
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    white-space: nowrap;
+    /* Evita que o texto quebre em várias linhas */
+}
+
+/* Estilo específico para o botão de Login/Cadastrar */
+.btn-login {
+    background-color: #28a745;
+    /* Verde sucesso */
+    color: #fff;
+}
+
+.btn-login:hover {
+    background-color: #218838;
+    /* Verde mais escuro */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Estilo específico para o botão de Sair */
+.btn-sair {
+    background-color: #dc3545;
+    /* Vermelho perigo */
+    color: #fff;
+}
+
+.btn-sair:hover {
+    background-color: #c82333;
+    /* Vermelho mais escuro */
+}
+
+/* CONTAINER PARA ALINHAR O "OLÁ, NOME!" E O BOTÃO (NOVO POSICIONAMENTO) */
+.info-usuario-menu {
+    position: absolute;
+    /* Posição absoluta em relação ao body */
+    top: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    /* Espaço entre o texto e o botão */
+}
+
+/* Estilo para o span "Olá, Nome!" no menu */
+.info-usuario-menu span {
+    font-weight: bold;
+    color: #2e8b57;
+    /* Um verde suave para o nome */
+}
+
+/* --- ESTILOS PARA O NOVO MENU DE PERFIL --- */
+.menu-perfil {
+    position: relative;
+    display: inline-block;
+}
+
+.btn-perfil {
+    background-color: #f8f9fa;
+    color: #333;
+    padding: 8px 16px;
+    font-size: 1em;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.btn-perfil:hover {
+    background-color: #e9ecef;
+}
+
+.dropdown-conteudo {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #ffffff;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.dropdown-conteudo a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+}
+
+.dropdown-conteudo a:hover {
+    background-color: #f1f1f1;
+}
+
+.link-perigo {
+    color: #dc3545 !important;
+    font-weight: bold;
+}
+
+.link-perigo:hover {
+    background-color: #dc3545 !important;
+    color: white !important;
+}
+
+.mostrar {
+    display: block;
 }

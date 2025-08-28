@@ -1,109 +1,116 @@
 <?php
-
 include "funcs.php";
-if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['admin'] != 1) {
-    $_SESSION['mensagem'] = "Acesso negado. Apenas administradores podem acessar esta área.";
-    header('Location: login.php');
-    exit();
+
+// VERIFICAÇÃO DE ADMIN CORRIGIDA E MAIS ROBUSTA
+if (!isset($_SESSION['usuario']['admin']) || $_SESSION['usuario']['admin'] != true) {
+    die("Acesso não autorizado.");
 }
+
 $conn = conecta();
 
 /**
- * Processa o upload de uma foto, salva na pasta e retorna o caminho completo.
- * @param array $foto_file Dados do arquivo vindo de $_FILES['foto'].
+ * Processa o upload de uma imagem, salva na pasta e retorna o caminho.
+ * @param array $file_data Dados do arquivo vindo de $_FILES.
  * @return string|false O caminho do arquivo salvo ou false em caso de falha.
  */
-function uploadFoto($foto_file)
+function uploadImagem($file_data)
 {
-    // Usando a pasta 'imagem' no singular, como você definiu.
-    $upload_dir = 'imagem/';
-    // Gera um nome único para o arquivo para evitar sobreposição.
-    $nome_arquivo = time() . '_' . basename($foto_file['name']);
-    $caminho_arquivo = $upload_dir . $nome_arquivo;
-
-    // Tenta mover o arquivo temporário para o destino final.
-    if (move_uploaded_file($foto_file['tmp_name'], $caminho_arquivo)) {
-        return $caminho_arquivo; // Retorna o caminho completo.
+    if ($file_data['error'] !== UPLOAD_ERR_OK) {
+        return false; // Retorna falso se houver erro de upload
     }
 
-    // Em caso de falha, retorna false.
-    return false;
+    $upload_dir = 'imagem/'; // Garanta que esta pasta exista e tenha permissão de escrita
+    if (!is_dir($upload_dir)) {
+        mkdir($upload_dir, 0755, true);
+    }
+
+    // Gera um nome único para o arquivo para evitar sobreposição
+    $nome_arquivo = uniqid('', true) . '_' . basename($file_data['name']);
+    $caminho_arquivo = $upload_dir . $nome_arquivo;
+
+    if (move_uploaded_file($file_data['tmp_name'], $caminho_arquivo)) {
+        return $caminho_arquivo; // Sucesso
+    }
+
+    return false; // Falha ao mover o arquivo
 }
+
 
 // --- VERIFICA A AÇÃO A SER TOMADA ---
 
-// Ação de Cadastrar (Create)
-if (isset($_POST['acao']) && $_POST['acao'] == 'cadastrar') {
-    $nome = $_POST['nome'];
-    $preco = $_POST['preco'];
-    $data_colheita = $_POST['data_colheita'];
-    $caminho_foto = ''; // Por padrão, não há foto.
+$acao = $_POST['acao'] ?? $_GET['acao'] ?? '';
 
-    // Verifica se um arquivo de foto foi enviado e não teve erros.
-    if (isset($_FILES['foto']) && $_FILES['foto']['error'] == 0) {
-        $caminho_foto = uploadFoto($_FILES['foto']);
+// Ação de Cadastrar (Create)
+if ($acao == 'cadastrar') {
+    // 1. Coletar os dados corretos do formulário
+    $nome = $_POST['nome'];
+    $descricao = $_POST['descricao'];
+    $valor_unitario = $_POST['valor_unitario'];
+    $qtde_estoque = $_POST['qtde_estoque'];
+    $caminho_imagem = null;
+
+    // 2. Processar o upload da imagem
+    if (isset($_FILES['imagem']) && $_FILES['imagem']['error'] == 0) {
+        $caminho_imagem = uploadImagem($_FILES['imagem']);
     }
 
-    $sql = "INSERT INTO produtos (nome, preco, data_colheita, foto) VALUES (:nome, :preco, :data, :foto)";
+    // 3. Inserir na tabela correta ('produto') com as colunas corretas
+    $sql = "INSERT INTO produto (nome, descricao, valor_unitario, qtde_estoque, imagem, excluido) VALUES (:nome, :descricao, :valor, :estoque, :imagem, false)";
     $stmt = $conn->prepare($sql);
     $stmt->execute([
         ':nome' => $nome,
-        ':preco' => $preco,
-        ':data' => $data_colheita,
-        ':foto' => $caminho_foto
+        ':descricao' => $descricao,
+        ':valor' => $valor_unitario,
+        ':estoque' => $qtde_estoque,
+        ':imagem' => $caminho_imagem
     ]);
 }
 
 // Ação de Editar (Update)
-if (isset($_POST['acao']) && $_POST['acao'] == 'editar') {
+if ($acao == 'editar') {
+    // 1. Coletar os dados corretos do formulário
     $id_produto = $_POST['id_produto'];
     $nome = $_POST['nome'];
-    $preco = $_POST['preco'];
-    $data_colheita = $_POST['data_colheita'];
-    $caminho_foto = $_POST['foto_antiga']; // Mantém a foto antiga por padrão.
+    $descricao = $_POST['descricao'];
+    $valor_unitario = $_POST['valor_unitario'];
+    $qtde_estoque = $_POST['qtde_estoque'];
+    $caminho_imagem = $_POST['imagem_antiga']; // Manter a imagem antiga por padrão
 
-    // Se uma NOVA foto foi enviada, processa o upload.
-    if (isset($_FILES['foto']) && $_FILES['foto']['error'] == 0) {
-        $nova_foto = uploadFoto($_FILES['foto']);
-        if ($nova_foto) {
-            // Se a foto antiga existia, apaga ela do servidor.
-            if ($caminho_foto && file_exists($caminho_foto)) {
-                unlink($caminho_foto);
+    // 2. Se uma NOVA imagem foi enviada, processa o upload
+    if (isset($_FILES['imagem']) && !empty($_FILES['imagem']['name']) && $_FILES['imagem']['error'] == 0) {
+        $nova_imagem = uploadImagem($_FILES['imagem']);
+        if ($nova_imagem) {
+            // Se a imagem antiga existia e era diferente, apaga ela do servidor
+            if ($caminho_imagem && file_exists($caminho_imagem)) {
+                unlink($caminho_imagem);
             }
-            $caminho_foto = $nova_foto; // Atualiza para o caminho da nova foto.
+            $caminho_imagem = $nova_imagem; // Atualiza para o caminho da nova imagem
         }
     }
 
-    $sql = "UPDATE produtos SET nome = :nome, preco = :preco, data_colheita = :data, foto = :foto WHERE id_produto = :id";
+    // 3. Atualizar a tabela correta ('produto') com as colunas corretas
+    $sql = "UPDATE produto SET nome = :nome, descricao = :descricao, valor_unitario = :valor, qtde_estoque = :estoque, imagem = :imagem WHERE id_produto = :id";
     $stmt = $conn->prepare($sql);
     $stmt->execute([
         ':nome' => $nome,
-        ':preco' => $preco,
-        ':data' => $data_colheita,
-        ':foto' => $caminho_foto,
+        ':descricao' => $descricao,
+        ':valor' => $valor_unitario,
+        ':estoque' => $qtde_estoque,
+        ':imagem' => $caminho_imagem,
         ':id' => $id_produto
     ]);
 }
 
-// Ação de Excluir (Delete)
-if (isset($_GET['acao']) && $_GET['acao'] == 'excluir') {
+// Ação de Excluir (Delete Lógico)
+if ($acao == 'excluir') {
     $id_produto = $_GET['id'];
 
-    // 1. Pega o caminho da foto no banco para poder apagar o arquivo.
-    $stmt_select = $conn->prepare("SELECT foto FROM produtos WHERE id_produto = :id");
-    $stmt_select->execute([':id' => $id_produto]);
-    $produto = $stmt_select->fetch();
-
-    // 2. Se o produto tinha uma foto e o arquivo existe, apaga o arquivo do servidor.
-    if ($produto && !empty($produto['foto']) && file_exists($produto['foto'])) {
-        unlink($produto['foto']);
-    }
-
-    // 3. Apaga o registro do produto do banco de dados.
-    $stmt_delete = $conn->prepare("DELETE FROM produtos WHERE id_produto = :id");
-    $stmt_delete->execute([':id' => $id_produto]);
+    // Em vez de DELETAR, vamos ATUALIZAR o campo 'excluido' para true
+    $sql = "UPDATE produto SET excluido = true WHERE id_produto = :id";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([':id' => $id_produto]);
 }
 
-// RESTAURADO: Redireciona de volta para a página principal do admin após qualquer ação.
+// Redireciona de volta para a página principal do admin após qualquer ação
 header("Location: admin.php");
 exit();

@@ -1,58 +1,54 @@
 <?php
-// Inicia a sessão se ela ainda não estiver ativa.
-// Esta deve ser a PRIMEIRA coisa no arquivo para garantir que a sessão funcione em todas as páginas.
+
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-/**
- * Função para conectar ao banco de dados PostgreSQL.
- */
-function conecta($params = "")
+
+function conecta()
 {
     $params = "pgsql:host=localhost; port=5432; dbname=Comercio; user=postgres; password=postgres";
     try {
         $varConn = new PDO($params);
+        $varConn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // Habilitar exceções é uma boa prática
         return $varConn;
     } catch (PDOException $e) {
-        echo "não conectou";
-        echo $e->getMessage();
-        exit;
+        error_log("Erro de conexão com o banco de dados: " . $e->getMessage());
+        die("Não foi possível conectar ao banco de dados. Tente novamente mais tarde.");
     }
 }
-;
 
-/**
- * Função CORRIGIDA para exibir uma imagem salva localmente.
- *
- * @param string $caminho O caminho do arquivo salvo no banco de dados (ex: 'imagem/foto.jpg').
- * @param string $alt_text O texto alternativo para a imagem.
- * @param string $classe_css A classe CSS para estilizar a imagem.
- * @return string A tag HTML <img> completa.
- */
+
+function ExecutaSQL($conn, $sql, $params = [])
+{
+    $stmt = $conn->prepare($sql);
+    $stmt->execute($params);
+    return $stmt->rowCount() > 0;
+}
+
+function ValorSQL($conn, $sql, $params = [])
+{
+    $stmt = $conn->prepare($sql);
+    $stmt->execute($params);
+    return $stmt->fetchColumn();
+}
+
+function TrazLinhaSQL($conn, $sql, $params = [])
+{
+    $stmt = $conn->prepare($sql);
+    $stmt->execute($params);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
 function exibirImagem($caminho, $alt_text, $classe_css = 'foto-produto')
 {
-    // Caminho para a sua imagem de erro padrão
     $imagem_erro = 'error.png';
-
-    // Verificamos se o caminho não está vazio E se o arquivo realmente existe no servidor.
     if (!empty($caminho) && file_exists($caminho)) {
-        // Se o arquivo existe, mostra a imagem.
         $caminho_seguro = htmlspecialchars($caminho, ENT_QUOTES, 'UTF-8');
         $alt_seguro = htmlspecialchars($alt_text, ENT_QUOTES, 'UTF-8');
-
-        return '<img 
-                    src="' . $caminho_seguro . '" 
-                    alt="' . $alt_seguro . '" 
-                    class="' . $classe_css . '"
-                >';
+        return '<img src="' . $caminho_seguro . '" alt="' . $alt_seguro . '" class="' . $classe_css . '">';
     } else {
-        // Se o caminho estiver vazio ou o arquivo não for encontrado, mostra a imagem de erro.
         $alt_seguro = htmlspecialchars($alt_text, ENT_QUOTES, 'UTF-8');
-        return '<img 
-                    src="' . $imagem_erro . '" 
-                    alt="Imagem indisponível para ' . $alt_seguro . '" 
-                    class="' . $classe_css . '"
-                >';
+        return '<img src="' . $imagem_erro . '" alt="Imagem indisponível para ' . $alt_seguro . '" class="' . $classe_css . '">';
     }
 }

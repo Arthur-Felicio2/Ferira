@@ -10,15 +10,15 @@ if (empty($acao)) {
     exit();
 }
 
-// --- AÇÃO DE CADASTRAR NOVO USUÁRIO (SIMPLIFICADO) ---
+// --- AÇÃO DE CADASTRAR NOVO USUÁRIO ---
 if ($acao == 'cadastrar') {
     $nome = $_POST['nome'];
     $email = $_POST['email'];
     $senha = $_POST['senha'];
 
-    $stmt = $conn->prepare("SELECT cod_usuario FROM usuario WHERE email = :email");
-    $stmt->execute([':email' => $email]);
-    if ($stmt->fetch()) {
+    // USANDO ValorSQL para verificar se o e-mail já existe. Mais limpo!
+    $sql_check = "SELECT COUNT(cod_usuario) FROM usuario WHERE email = :email";
+    if (ValorSQL($conn, $sql_check, [':email' => $email]) > 0) {
         $_SESSION['mensagem'] = "Erro: Este e-mail já está cadastrado.";
         header('Location: cadastro.php');
         exit();
@@ -26,10 +26,13 @@ if ($acao == 'cadastrar') {
 
     $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
 
-    // O usuário é SEMPRE cadastrado como não-admin (admin = 0 ou false)
-    $sql = "INSERT INTO usuario (nome, email, senha, admin) VALUES (:nome, :email, :senha, 0)";
-    $stmt = $conn->prepare($sql);
-    $stmt->execute([':nome' => $nome, ':email' => $email, ':senha' => $senha_hash]);
+    // USANDO ExecutaSQL para inserir o novo usuário. Mais simples!
+    $sql_insert = "INSERT INTO usuario (nome, email, senha, admin) VALUES (:nome, :email, :senha, false)";
+    ExecutaSQL($conn, $sql_insert, [
+        ':nome' => $nome,
+        ':email' => $email,
+        ':senha' => $senha_hash
+    ]);
 
     $_SESSION['mensagem'] = "Cadastro realizado com sucesso! Faça o login.";
     header('Location: login.php');
@@ -38,21 +41,19 @@ if ($acao == 'cadastrar') {
 
 // --- AÇÃO DE LOGIN ---
 if ($acao == 'login') {
-    // ... (a lógica de login permanece a mesma)
     $email = $_POST['email'];
     $senha = $_POST['senha'];
 
+    // USANDO TrazLinhaSQL para buscar os dados do usuário. Mais direto!
     $sql = "SELECT * FROM usuario WHERE email = :email AND excluido = false";
-    $stmt = $conn->prepare($sql);
-    $stmt->execute([':email' => $email]);
-    $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+    $usuario = TrazLinhaSQL($conn, $sql, [':email' => $email]);
 
     if ($usuario && password_verify($senha, $usuario['senha'])) {
-        $isAdmin = ($usuario['admin'] == 1);
+        // A lógica de sessão permanece a mesma
         $_SESSION['usuario'] = [
             'cod_usuario' => $usuario['cod_usuario'],
             'nome' => $usuario['nome'],
-            'admin' => $isAdmin
+            'admin' => (bool)$usuario['admin'] // Convertendo para booleano para segurança
         ];
         header('Location: index.php');
         exit();
@@ -63,26 +64,21 @@ if ($acao == 'login') {
     }
 }
 
-// --- NOVA AÇÃO DE AUTOEXCLUSÃO ---
+// --- AÇÃO DE AUTOEXCLUSÃO ---
 if ($acao == 'auto_excluir') {
-    // Verifica se há um usuário logado na sessão
     if (!isset($_SESSION['usuario']['cod_usuario'])) {
         header('Location: login.php');
         exit();
     }
 
-    $id_para_excluir = $_SESSION['usuario']['cod_usuario'];
-
-    // Marca o usuário como excluído no banco
+    // USANDO ExecutaSQL para marcar o usuário como excluído. Mais legível!
     $sql = "UPDATE usuario SET excluido = true WHERE cod_usuario = :id";
-    $stmt = $conn->prepare($sql);
-    $stmt->execute([':id' => $id_para_excluir]);
+    ExecutaSQL($conn, $sql, [':id' => $_SESSION['usuario']['cod_usuario']]);
 
-    // Destrói a sessão para fazer logout
+    // A lógica de logout permanece a mesma
     session_unset();
     session_destroy();
 
-    // Reinicia a sessão apenas para passar uma mensagem para a tela de login
     session_start();
     $_SESSION['mensagem'] = "Sua conta foi excluída com sucesso.";
     header('Location: login.php');

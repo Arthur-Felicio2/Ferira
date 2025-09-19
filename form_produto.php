@@ -6,27 +6,22 @@ if (!isset($_SESSION['usuario']['admin']) || $_SESSION['usuario']['admin'] != tr
 }
 
 $conn = conecta();
-
 $modo_edicao = false;
 $produto = [
     'id_produto' => '',
     'nome' => '',
-    'descricao' => '', // Adicionado
-    'valor_unitario' => '', // Renomeado
-    'qtde_estoque' => '', // Adicionado
-    'imagem' => '' // Renomeado
+    'descricao' => '',
+    'valor_unitario' => '',
+    'qtde_estoque' => '',
+    'imagem' => ''
 ];
 
 if (isset($_GET['id']) && !empty($_GET['id'])) {
     $modo_edicao = true;
-    $id_produto = $_GET['id'];
 
-    // AJUSTADO: Busca da tabela "produto"
+    // USANDO A NOVA FUNÇÃO PARA BUSCAR A LINHA
     $sql = "SELECT * FROM produto WHERE id_produto = :id";
-    $stmt = $conn->prepare($sql);
-    $stmt->bindParam(':id', $id_produto, PDO::PARAM_INT);
-    $stmt->execute();
-    $produto = $stmt->fetch(PDO::FETCH_ASSOC);
+    $produto = TrazLinhaSQL($conn, $sql, [':id' => $_GET['id']]);
 
     if (!$produto) {
         die("Produto não encontrado!");
@@ -50,7 +45,6 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
         <h1><?= $modo_edicao ? 'Editar Produto' : 'Cadastrar Novo Produto' ?></h1>
 
         <form action="processa_produto.php" method="POST" enctype="multipart/form-data">
-
             <input type="hidden" name="acao" value="<?= $modo_edicao ? 'editar' : 'cadastrar' ?>">
             <?php if ($modo_edicao): ?>
                 <input type="hidden" name="id_produto" value="<?= $produto['id_produto'] ?>">
@@ -61,35 +55,25 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                 <label for="nome">Nome do Produto:</label>
                 <input type="text" id="nome" name="nome" value="<?= htmlspecialchars($produto['nome']) ?>" required>
             </div>
-
             <div class="form-grupo">
                 <label for="descricao">Descrição:</label>
-                <textarea id="descricao" name="descricao" rows="3"
-                    required><?= htmlspecialchars($produto['descricao']) ?></textarea>
+                <textarea id="descricao" name="descricao" rows="3" required><?= htmlspecialchars($produto['descricao']) ?></textarea>
             </div>
-
             <div class="form-grupo">
                 <label for="valor_unitario">Valor Unitário (ex: 9.99):</label>
-                <input type="number" step="0.01" id="valor_unitario" name="valor_unitario"
-                    value="<?= htmlspecialchars($produto['valor_unitario']) ?>" required>
+                <input type="number" step="0.01" id="valor_unitario" name="valor_unitario" value="<?= htmlspecialchars($produto['valor_unitario']) ?>" required>
             </div>
-
             <div class="form-grupo">
                 <label for="qtde_estoque">Quantidade em Estoque:</label>
-                <input type="number" step="1" id="qtde_estoque" name="qtde_estoque"
-                    value="<?= htmlspecialchars($produto['qtde_estoque']) ?>" required>
+                <input type="number" step="1" id="qtde_estoque" name="qtde_estoque" value="<?= htmlspecialchars($produto['qtde_estoque']) ?>" required>
             </div>
-
             <div class="form-grupo">
                 <label for="imagem">Imagem do Produto:</label>
                 <input type="file" id="imagem" name="imagem" accept="image/png, image/jpeg, image/gif">
-
                 <?php if ($modo_edicao && !empty($produto['imagem'])): ?>
-                    <p>Imagem atual: <img src="<?= htmlspecialchars($produto['imagem']) ?>" alt="Imagem atual"
-                            class="foto-produto-preview"></p>
+                    <p>Imagem atual: <img src="<?= htmlspecialchars($produto['imagem']) ?>" alt="Imagem atual" class="foto-produto-preview"></p>
                 <?php endif; ?>
             </div>
-
             <div class="form-acoes">
                 <button type="submit" class="btn-salvar">Salvar</button>
                 <a href="admin.php" class="btn-cancelar">Cancelar</a>
